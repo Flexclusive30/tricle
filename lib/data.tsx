@@ -609,3 +609,39 @@ export const events = [
     image: "/placeholder.svg?height=300&width=500&text=Food+Festival",
   },
 ]
+
+export const entertainmentVenues = [
+  {
+    id: "solanis-shisanyama",
+    name: "Solanis Shisanyama",
+    type: "Nightlife",
+    location: "Manzini",
+    description: "Popular spot for grilled meats and live music.",
+    image: "/placeholder.svg?height=300&width=500&text=Solanis+Shisanyama",
+    hours: "6 PM - 2 AM",
+    price: "E50 - E200",
+    coordinates: [-26.4833, 31.3667],
+  },
+  {
+    id: "the-mill-malkerns",
+    name: "The Mill (Malkerns)",
+    type: "Cultural",
+    location: "Malkerns",
+    description: "Unique venue with art exhibitions and craft markets.",
+    image: "/placeholder.svg?height=300&width=500&text=The+Mill+(Malkerns)",
+    hours: "10 AM - 6 PM",
+    price: "E0 - E50",
+    coordinates: [-26.5333, 31.2],
+  },
+  {
+    id: "house-on-fire",
+    name: "House on Fire",
+    type: "Live Music",
+    location: "Malkerns Valley",
+    description: "Internationally acclaimed venue for music and arts.",
+    image: "/placeholder.svg?height=300&width=500&text=House+on+Fire",
+    hours: "Varies",
+    price: "E100 - E500",
+    coordinates: [-26.5333, 31.2],
+  },
+]

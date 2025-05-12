@@ -84,22 +84,43 @@ export async function getProviders(options?: {
 export async function getProviderBySlug(id: string) {
   const supabase = getSupabaseServerClient()
 
-  // First try to find by slug
-  let { data, error } = await supabase.from("providers").select("*").eq("slug", id).single()
+  try {
+    // First try to find by slug
+    const { data, error } = await supabase.from("providers").select("*").eq("slug", id).maybeSingle()
 
-  if (error || !data) {
-    // If not found by slug, try to find by id
-    const { data: dataById, error: errorById } = await supabase.from("providers").select("*").eq("id", id).single()
-
-    if (errorById) {
-      console.error(`Error fetching provider ${id}:`, errorById)
+    if (error) {
+      console.error(`Error fetching provider by slug ${id}:`, error)
       return null
     }
 
-    data = dataById
-  }
+    // If found by slug, return it
+    if (data) {
+      return data
+    }
 
-  return data
+    // If not found by slug and id is a number, try to find by id
+    const numericId = Number.parseInt(id, 10)
+    if (!isNaN(numericId)) {
+      const { data: dataById, error: errorById } = await supabase
+        .from("providers")
+        .select("*")
+        .eq("id", numericId)
+        .maybeSingle()
+
+      if (errorById) {
+        console.error(`Error fetching provider by id ${numericId}:`, errorById)
+        return null
+      }
+
+      return dataById
+    }
+
+    // If id is not a number, return null
+    return null
+  } catch (error) {
+    console.error(`Exception fetching provider ${id}:`, error)
+    return null
+  }
 }
 
 // Events
@@ -140,13 +161,27 @@ export async function getEvents(options?: {
 }
 
 // Reviews
-export async function getReviewsForProvider(providerId: number) {
+export async function getReviewsForProvider(providerId: number | string) {
   const supabase = getSupabaseServerClient()
-  const { data, error } = await supabase
-    .from("reviews")
-    .select("*")
-    .eq("provider_id", providerId)
-    .order("date", { ascending: false })
+
+  // Handle both string and numeric IDs
+  let query = supabase.from("reviews").select("*").order("date", { ascending: false })
+
+  if (typeof providerId === "number") {
+    query = query.eq("provider_id", providerId)
+  } else {
+    // If it's a string that can be converted to a number
+    const numericId = Number.parseInt(providerId, 10)
+    if (!isNaN(numericId)) {
+      query = query.eq("provider_id", numericId)
+    } else {
+      // If it's a non-numeric string, return empty array
+      console.error(`Invalid provider ID for reviews: ${providerId}`)
+      return []
+    }
+  }
+
+  const { data, error } = await query
 
   if (error) {
     console.error(`Error fetching reviews for provider ${providerId}:`, error)

@@ -6,6 +6,23 @@ import { categories, allProviders } from "@/lib/data"
 import { notFound } from "next/navigation"
 import ImageCarousel from "@/components/image-carousel"
 import BackButton from "@/components/back-button"
+import LocationMap from "@/components/location-map"
+
+// Get category center coordinates
+const getCategoryCoordinates = (categorySlug: string): [number, number] => {
+  // For categories, we'll use the center of Eswatini with slight variations
+  // to make each category map look a bit different
+  const coordinatesMap: Record<string, [number, number]> = {
+    accommodation: [-26.5225, 31.4659],
+    tours: [-26.5125, 31.4559],
+    dining: [-26.5325, 31.4759],
+    cultural: [-26.5025, 31.4459],
+    adventure: [-26.5425, 31.4859],
+    entertainment: [-26.5525, 31.4959],
+  }
+
+  return coordinatesMap[categorySlug] || [-26.5225, 31.4659] // Default to center of Eswatini
+}
 
 export default function CategoryPage({ params }: { params: { category: string } }) {
   const category = categories.find((c) => c.slug === params.category)
@@ -15,6 +32,8 @@ export default function CategoryPage({ params }: { params: { category: string } 
   }
 
   const categoryProviders = allProviders.filter((provider) => provider.category === category.slug)
+
+  const categoryCoordinates = getCategoryCoordinates(category.slug)
 
   const regions = [
     { id: "all", name: "All Regions" },
@@ -58,6 +77,23 @@ export default function CategoryPage({ params }: { params: { category: string } 
         <div className="relative z-10 text-center text-white">
           <h1 className="text-4xl md:text-5xl font-bold mb-4">{category.name}</h1>
           <p className="text-xl max-w-2xl mx-auto">{category.description}</p>
+        </div>
+      </section>
+
+      {/* Category Map */}
+      <section className="container mx-auto py-8 px-4">
+        <div className="bg-white/50 backdrop-blur-sm rounded-lg p-6 shadow-md">
+          <h2 className="text-xl font-bold mb-4">{category.name} Locations</h2>
+          <p className="text-muted-foreground mb-6">
+            Explore {category.name.toLowerCase()} options across Eswatini. Click on the map to view details or use the
+            filters below.
+          </p>
+          <LocationMap
+            name={`${category.name} in Eswatini`}
+            coordinates={categoryCoordinates}
+            zoom={9}
+            height="h-[350px]"
+          />
         </div>
       </section>
 

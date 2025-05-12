@@ -3,6 +3,7 @@ import type { Metadata } from "next"
 import { Inter } from "next/font/google"
 import "./globals.css"
 import { ThemeProvider } from "@/components/theme-provider"
+import BottomNavigation from "@/components/bottom-navigation"
 
 const inter = Inter({ subsets: ["latin"] })
 
@@ -21,7 +22,10 @@ export default function RootLayout({
     <html lang="en">
       <body className={inter.className}>
         <ThemeProvider attribute="class" defaultTheme="light">
-          {children}
+          <main className="min-h-screen">
+            {children}
+            <BottomNavigation />
+          </main>
         </ThemeProvider>
       </body>
     </html>

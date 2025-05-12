@@ -8,6 +8,19 @@ import { notFound } from "next/navigation"
 import Image from "next/image"
 // Add back button to the region page as well
 import BackButton from "@/components/back-button"
+import LocationMap from "@/components/location-map"
+
+// Get region coordinates (center points)
+const getRegionCoordinates = (regionSlug: string): [number, number] => {
+  const coordinatesMap: Record<string, [number, number]> = {
+    hhohho: [-26.3167, 31.1333], // Centered on Mbabane
+    manzini: [-26.4833, 31.3667], // Centered on Manzini
+    lubombo: [-26.2667, 31.8333], // Centered on Hlane area
+    shiselweni: [-27.1167, 31.2], // Centered on Nhlangano
+  }
+
+  return coordinatesMap[regionSlug] || [-26.5225, 31.4659] // Default to center of Eswatini
+}
 
 export default function RegionPage({ params }: { params: { region: string } }) {
   const region = regions.find((r) => r.slug === params.region)
@@ -17,6 +30,7 @@ export default function RegionPage({ params }: { params: { region: string } }) {
   }
 
   const regionProviders = allProviders.filter((provider) => provider.region === region.slug)
+  const regionCoordinates = getRegionCoordinates(region.slug)
 
   // Get unique categories in this region
   const regionCategories = Array.from(new Set(regionProviders.map((provider) => provider.category)))
@@ -77,6 +91,12 @@ export default function RegionPage({ params }: { params: { region: string } }) {
             <div className="absolute bottom-4 left-4 bg-white/80 px-3 py-1 rounded-md text-sm font-medium">
               {region.name} Region
             </div>
+          </div>
+
+          {/* Region Map with LocationMap */}
+          <div className="mt-6">
+            <h3 className="font-bold text-xl mb-4">Interactive Map</h3>
+            <LocationMap name={`${region.name} Region`} coordinates={regionCoordinates} zoom={10} height="h-[350px]" />
           </div>
 
           <div className="mt-6 bg-white rounded-lg p-6 shadow-md">

@@ -6,34 +6,34 @@ import { Facebook, Twitter, Instagram, Youtube, Mail } from "lucide-react"
 export default function Footer() {
   return (
     <footer className="bg-white/25 backdrop-blur-sm border-t border-white/20">
-      <div className="container mx-auto py-12 px-4">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+      <div className="container mx-auto py-8 md:py-12 px-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 md:gap-8">
           <div>
-            <h3 className="font-bold text-lg mb-4 text-shadow">
+            <h3 className="font-bold text-lg mb-3 md:mb-4 text-shadow">
               <span className="text-eswatini-blue">Visit</span> <span className="text-eswatini-red">Eswatini</span>
             </h3>
-            <p className="text-foreground mb-4 text-shadow-light">
+            <p className="text-foreground mb-4 text-shadow-light text-sm">
               Discover the beauty and culture of Eswatini, the Kingdom formerly known as Swaziland.
             </p>
-            <div className="flex space-x-4">
-              <Button variant="ghost" size="icon" className="bg-white/20 hover:bg-white/40">
-                <Facebook className="h-5 w-5" />
+            <div className="flex space-x-3">
+              <Button variant="ghost" size="icon" className="bg-white/20 hover:bg-white/40 h-9 w-9">
+                <Facebook className="h-4 w-4" />
               </Button>
-              <Button variant="ghost" size="icon" className="bg-white/20 hover:bg-white/40">
-                <Twitter className="h-5 w-5" />
+              <Button variant="ghost" size="icon" className="bg-white/20 hover:bg-white/40 h-9 w-9">
+                <Twitter className="h-4 w-4" />
               </Button>
-              <Button variant="ghost" size="icon" className="bg-white/20 hover:bg-white/40">
-                <Instagram className="h-5 w-5" />
+              <Button variant="ghost" size="icon" className="bg-white/20 hover:bg-white/40 h-9 w-9">
+                <Instagram className="h-4 w-4" />
               </Button>
-              <Button variant="ghost" size="icon" className="bg-white/20 hover:bg-white/40">
-                <Youtube className="h-5 w-5" />
+              <Button variant="ghost" size="icon" className="bg-white/20 hover:bg-white/40 h-9 w-9">
+                <Youtube className="h-4 w-4" />
               </Button>
             </div>
           </div>
 
           <div>
-            <h3 className="font-bold text-lg mb-4 text-shadow">Quick Links</h3>
-            <ul className="space-y-2">
+            <h3 className="font-bold text-lg mb-3 md:mb-4 text-shadow">Quick Links</h3>
+            <ul className="space-y-2 text-sm">
               <li>
                 <Link href="/" className="text-foreground hover:text-eswatini-blue text-shadow-light">
                   Home
@@ -66,8 +66,8 @@ export default function Footer() {
           </div>
 
           <div>
-            <h3 className="font-bold text-lg mb-4 text-shadow">Resources</h3>
-            <ul className="space-y-2">
+            <h3 className="font-bold text-lg mb-3 md:mb-4 text-shadow">Resources</h3>
+            <ul className="space-y-2 text-sm">
               <li>
                 <Link href="/about" className="text-foreground hover:text-eswatini-blue text-shadow-light">
                   About Eswatini
@@ -97,13 +97,13 @@ export default function Footer() {
           </div>
 
           <div>
-            <h3 className="font-bold text-lg mb-4 text-shadow">Newsletter</h3>
-            <p className="text-foreground mb-4 text-shadow-light">
+            <h3 className="font-bold text-lg mb-3 md:mb-4 text-shadow">Newsletter</h3>
+            <p className="text-foreground mb-3 md:mb-4 text-shadow-light text-sm">
               Subscribe to our newsletter for the latest updates on events and travel deals.
             </p>
-            <div className="flex gap-2">
+            <div className="flex flex-col sm:flex-row gap-2">
               <Input type="email" placeholder="Your email" className="bg-white/50" />
-              <Button className="bg-eswatini-blue hover:bg-eswatini-blue/90">
+              <Button className="bg-eswatini-blue hover:bg-eswatini-blue/90 whitespace-nowrap">
                 <Mail className="h-4 w-4 mr-2" />
                 Subscribe
               </Button>
@@ -111,7 +111,7 @@ export default function Footer() {
           </div>
         </div>
 
-        <div className="border-t border-white/20 mt-8 pt-8 text-center text-foreground text-shadow-light">
+        <div className="border-t border-white/20 mt-6 md:mt-8 pt-6 md:pt-8 text-center text-foreground text-shadow-light text-sm">
           <p>&copy; {new Date().getFullYear()} Visit Eswatini. All rights reserved.</p>
         </div>
       </div>

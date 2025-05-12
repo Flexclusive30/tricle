@@ -47,18 +47,18 @@ export default function ProviderNavigation({ className, providerId }: ProviderNa
   return (
     <div
       className={cn(
-        "sticky top-16 z-30 w-full bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 border-b",
+        "sticky top-14 md:top-16 z-30 w-full bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 border-b",
         className,
       )}
     >
-      <div className="container mx-auto px-4">
-        <nav className="flex overflow-x-auto">
-          <ul className="flex w-max space-x-8 py-4">
+      <div className="container mx-auto px-3 md:px-4">
+        <nav className="flex overflow-x-auto scrollbar-hide">
+          <ul className="flex w-max space-x-4 md:space-x-8 py-3 md:py-4">
             <li>
               <button
                 onClick={() => scrollToSection("about")}
                 className={cn(
-                  "text-sm font-medium transition-colors hover:text-primary",
+                  "text-sm font-medium transition-colors hover:text-primary whitespace-nowrap",
                   activeSection === "about" ? "text-primary border-b-2 border-primary pb-1" : "text-muted-foreground",
                 )}
               >
@@ -69,7 +69,7 @@ export default function ProviderNavigation({ className, providerId }: ProviderNa
               <button
                 onClick={() => scrollToSection("amenities")}
                 className={cn(
-                  "text-sm font-medium transition-colors hover:text-primary",
+                  "text-sm font-medium transition-colors hover:text-primary whitespace-nowrap",
                   activeSection === "amenities"
                     ? "text-primary border-b-2 border-primary pb-1"
                     : "text-muted-foreground",
@@ -82,24 +82,24 @@ export default function ProviderNavigation({ className, providerId }: ProviderNa
               <button
                 onClick={() => scrollToSection("services")}
                 className={cn(
-                  "text-sm font-medium transition-colors hover:text-primary",
+                  "text-sm font-medium transition-colors hover:text-primary whitespace-nowrap",
                   activeSection === "services"
                     ? "text-primary border-b-2 border-primary pb-1"
                     : "text-muted-foreground",
                 )}
               >
-                Services & Activities
+                Services
               </button>
             </li>
             <li>
               <button
                 onClick={() => scrollToSection("hours")}
                 className={cn(
-                  "text-sm font-medium transition-colors hover:text-primary",
+                  "text-sm font-medium transition-colors hover:text-primary whitespace-nowrap",
                   activeSection === "hours" ? "text-primary border-b-2 border-primary pb-1" : "text-muted-foreground",
                 )}
               >
-                Opening Hours
+                Hours
               </button>
             </li>
           </ul>

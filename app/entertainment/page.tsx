@@ -1,73 +1,113 @@
-import Navbar from "@/components/navbar"
-import Footer from "@/components/footer"
-import AnimatedProviderCard from "@/components/animated-provider-card"
-import { allProviders } from "@/lib/data"
 import { Button } from "@/components/ui/button"
-import { Music } from "lucide-react"
-// Add back button to the entertainment page as well
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import Footer from "@/components/footer"
+import { entertainmentVenues } from "@/lib/data"
 import BackButton from "@/components/back-button"
+import LocationMap from "@/components/location-map"
 
 export default function EntertainmentPage() {
-  // Filter providers to only show entertainment venues
-  const entertainmentProviders = allProviders.filter((provider) => provider.category === "entertainment")
+  // Group venues by type
+  const venuesByType = entertainmentVenues.reduce(
+    (acc, venue) => {
+      if (!acc[venue.type]) {
+        acc[venue.type] = []
+      }
+      acc[venue.type].push(venue)
+      return acc
+    },
+    {} as Record<string, typeof entertainmentVenues>,
+  )
+
+  const venueTypes = Object.keys(venuesByType)
 
   return (
-    <main className="min-h-screen">
-      <Navbar />
-
+    <main className="min-h-screen pb-16">
       {/* Back Button */}
       <div className="container mx-auto px-4 py-4">
         <BackButton />
       </div>
 
-      {/* Hero Section */}
-      <section className="relative h-80 bg-cover bg-center flex items-center justify-center bg-purple-900">
-        <div className="absolute inset-0 bg-black/40"></div>
+      {/* Entertainment Hero */}
+      <section
+        className="relative h-64 md:h-80 bg-cover bg-center flex items-center justify-center"
+        style={{ backgroundImage: `url('/placeholder.svg?height=500&width=1200&text=Entertainment+in+Eswatini')` }}
+      >
+        <div className="absolute inset-0 bg-black/50"></div>
         <div className="relative z-10 text-center text-white">
-          <h1 className="text-4xl md:text-5xl font-bold mb-4">Entertainment in Eswatini</h1>
-          <p className="text-xl max-w-2xl mx-auto">
-            Experience the vibrant nightlife and entertainment scene across the kingdom
+          <h1 className="text-3xl md:text-5xl font-bold mb-4">Entertainment in Eswatini</h1>
+          <p className="text-lg md:text-xl max-w-2xl mx-auto">
+            Discover the vibrant nightlife, cultural performances, and entertainment venues across the kingdom.
           </p>
         </div>
       </section>
 
-      {/* Featured Entertainment Venues */}
-      <section className="container mx-auto py-12 px-4">
-        <div className="flex items-center gap-3 mb-8">
-          <div className="bg-purple-100 p-2 rounded-full">
-            <Music className="h-6 w-6 text-purple-500" />
-          </div>
-          <h2 className="text-3xl font-bold">Featured Entertainment Venues</h2>
-        </div>
-
-        <div className="flex flex-wrap justify-center gap-8 mb-12">
-          {entertainmentProviders.slice(0, 3).map((provider) => (
-            <AnimatedProviderCard key={provider.id} provider={provider} />
-          ))}
-        </div>
-
-        <div className="bg-slate-100 rounded-lg p-8 mb-12">
-          <h3 className="text-2xl font-bold mb-4">Discover Eswatini's Nightlife</h3>
-          <p className="text-muted-foreground mb-6">
-            From live music venues and cultural performances to modern entertainment complexes, Eswatini offers a
-            diverse range of entertainment options for visitors. Experience the rhythm of traditional and contemporary
-            music, enjoy local performances, or spend an evening at one of the kingdom's vibrant nightspots.
-          </p>
-          <Button size="lg" className="bg-purple-600 hover:bg-purple-700">
-            Explore All Venues
-          </Button>
-        </div>
-      </section>
-
-      {/* All Entertainment Venues */}
+      {/* Entertainment Venues */}
       <section className="container mx-auto py-8 px-4">
-        <h2 className="text-2xl font-bold mb-8">All Entertainment Venues</h2>
+        <Tabs defaultValue={venueTypes[0]} className="w-full">
+          <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-8">
+            <h2 className="text-2xl font-bold">Browse Entertainment</h2>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-          {entertainmentProviders.map((provider) => (
-            <AnimatedProviderCard key={provider.id} provider={provider} />
+            <TabsList className="w-full md:w-auto overflow-x-auto">
+              {venueTypes.map((type) => (
+                <TabsTrigger key={type} value={type} className="px-4 py-2 whitespace-nowrap">
+                  {type}
+                </TabsTrigger>
+              ))}
+            </TabsList>
+          </div>
+
+          {venueTypes.map((type) => (
+            <TabsContent key={type} value={type}>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {venuesByType[type].map((venue) => (
+                  <div key={venue.id} className="bg-white rounded-lg overflow-hidden shadow-md">
+                    <div className="h-48 overflow-hidden">
+                      <img
+                        src={venue.image || `/placeholder.svg?height=300&width=500&text=${venue.name}`}
+                        alt={venue.name}
+                        className="w-full h-full object-cover"
+                      />
+                    </div>
+                    <div className="p-4">
+                      <h3 className="font-bold text-lg mb-2">{venue.name}</h3>
+                      <p className="text-muted-foreground text-sm mb-4">{venue.description}</p>
+                      <div className="flex flex-col gap-2">
+                        <div className="flex justify-between">
+                          <span className="text-sm font-medium">Location:</span>
+                          <span className="text-sm">{venue.location}</span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span className="text-sm font-medium">Hours:</span>
+                          <span className="text-sm">{venue.hours}</span>
+                        </div>
+                        {venue.price && (
+                          <div className="flex justify-between">
+                            <span className="text-sm font-medium">Price Range:</span>
+                            <span className="text-sm">{venue.price}</span>
+                          </div>
+                        )}
+                      </div>
+                      <div className="mt-4">
+                        <LocationMap
+                          name={venue.name}
+                          coordinates={venue.coordinates || [-26.5225, 31.4659]}
+                          height="h-[200px]"
+                          zoom={13}
+                        />
+                      </div>
+                      <div className="mt-4 flex justify-between">
+                        <Button variant="outline" size="sm">
+                          More Details
+                        </Button>
+                        <Button size="sm">Book Now</Button>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </TabsContent>
           ))}
-        </div>
+        </Tabs>
       </section>
 
       <Footer />

@@ -40,11 +40,13 @@ export default function AnimatedProviderCard({ provider, className }: AnimatedPr
     <Link href={`/providers/${provider.id || provider.slug}`}>
       <div
         className={cn(
-          "w-[300px] h-[200px] bg-slate-800/35 backdrop-blur-sm relative flex items-center justify-center rounded-lg overflow-hidden transition-all duration-500 group",
+          "w-full sm:w-[300px] h-[180px] sm:h-[200px] bg-slate-800/35 backdrop-blur-sm relative flex items-center justify-center rounded-lg overflow-hidden transition-all duration-500 group mx-auto",
           className,
         )}
         onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={() => setIsHovered(false)}
+        onTouchStart={() => setIsHovered(true)}
+        onTouchEnd={() => setTimeout(() => setIsHovered(false), 1000)}
       >
         {/* Animated border */}
         <div
