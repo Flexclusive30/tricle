@@ -3,6 +3,8 @@
 import type React from "react"
 
 import { useState, useEffect, useCallback, useRef } from "react"
+import { Button } from "@/components/ui/button"
+import { ChevronLeft, ChevronRight } from "lucide-react"
 import { cn } from "@/lib/utils"
 import Image from "next/image"
 
@@ -140,6 +142,27 @@ export default function ImageCarousel({
           </div>
         ))}
       </div>
+
+      {/* Navigation Arrows */}
+      <Button
+        variant="ghost"
+        size="icon"
+        className="absolute top-1/2 left-2 -translate-y-1/2 bg-black/30 hover:bg-black/50 text-white rounded-full p-2 z-10"
+        onClick={prevSlide}
+        aria-label="Previous image"
+      >
+        <ChevronLeft className="h-6 w-6" />
+      </Button>
+
+      <Button
+        variant="ghost"
+        size="icon"
+        className="absolute top-1/2 right-2 -translate-y-1/2 bg-black/30 hover:bg-black/50 text-white rounded-full p-2 z-10"
+        onClick={nextSlide}
+        aria-label="Next image"
+      >
+        <ChevronRight className="h-6 w-6" />
+      </Button>
 
       {/* Indicator Dots */}
       <div className="absolute bottom-4 left-0 right-0 flex justify-center gap-2 z-10">

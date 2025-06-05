@@ -1,21 +1,21 @@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Card, CardContent } from "@/components/ui/card"
 import { MapPin, Phone, Mail, Globe, Star, Share2, Heart, Clock, CheckCircle } from "lucide-react"
+import Navbar from "@/components/navbar"
 import Footer from "@/components/footer"
 import ImageGallery from "@/components/image-gallery"
-import ReviewSectionWithSupabase from "@/components/review-section-with-supabase"
+import ReviewSection from "@/components/review-section"
 import ProviderNavigation from "@/components/provider-navigation"
-import { getProviderBySlug, getReviewsForProvider, getProviders } from "@/lib/data-service"
+import { allProviders, regions } from "@/lib/data"
 import { notFound } from "next/navigation"
-import BackButton from "@/components/back-button"
-import { getProviderByIdFallback } from "@/lib/provider-fallback"
-import LocationMap from "@/components/location-map"
+import GoogleMapsEswatini from "@/components/google-maps-eswatini"
 
 // Make sure the page title and metadata reflect the specific provider
 import type { Metadata } from "next"
+import BackButton from "@/components/back-button"
 
 export async function generateMetadata({ params }: { params: { id: string } }): Promise<Metadata> {
-  const provider = (await getProviderBySlug(params.id)) || getProviderByIdFallback(params.id)
+  const provider = allProviders.find((p) => p.id === params.id)
 
   if (!provider) {
     return {
@@ -30,60 +30,25 @@ export async function generateMetadata({ params }: { params: { id: string } }): 
   }
 }
 
-export default async function ProviderPage({ params }: { params: { id: string } }) {
-  let provider = await getProviderBySlug(params.id)
-
-  // If not found in database, try the local data fallback
-  if (!provider) {
-    console.log(`Provider not found in database, trying fallback for: ${params.id}`)
-    provider = getProviderByIdFallback(params.id)
-  }
+export default function ProviderPage({ params }: { params: { id: string } }) {
+  const provider = allProviders.find((p) => p.id === params.id)
 
   if (!provider) {
     notFound()
   }
 
-  // Add default values for database fields if using fallback data
-  if (!provider.review_count && provider.reviewCount) {
-    provider = {
-      ...provider,
-      review_count: provider.reviewCount,
-      // Ensure slug is set if it's not already
-      slug: provider.slug || params.id,
-    }
-  }
-
-  // Get reviews for this provider - only if we have a numeric ID
-  let reviews = []
-  if (typeof provider.id === "number") {
-    reviews = await getReviewsForProvider(provider.id)
-  } else {
-    // Try to get reviews using the numeric ID if possible
-    const numericId = Number.parseInt(provider.id, 10)
-    if (!isNaN(numericId)) {
-      reviews = await getReviewsForProvider(numericId)
-    }
-  }
-
-  // Get related providers (same category)
-  const relatedProviders = await getProviders({
-    category: provider.category,
-    limit: 3,
-  })
-
-  // Filter out the current provider from related providers
-  const filteredRelatedProviders = relatedProviders.filter((p) => p.id !== provider.id)
+  const providerRegion = regions.find((r) => r.slug === provider.region)
 
   // Get provider-specific images
   const getProviderImages = (providerId: string) => {
-    if (providerId === "hlane-royal-national-park" || providerId.includes("hlane")) {
+    if (providerId === "hlane-royal-national-park") {
       return [
         "/images/hlane-royal-park.jpeg",
         "/images/hlane-lion.jpeg",
         "/images/hlane-room.jpeg",
         "/images/hlane-accommodation.jpeg",
       ]
-    } else if (providerId === "royal-swazi-spa" || providerId.includes("royal") || providerId.includes("spa")) {
+    } else if (providerId === "royal-swazi-spa" || providerId === "featured-provider") {
       return ["/images/hilton-exterior.jpeg", "/images/hilton-lobby.jpeg", "/images/hilton-atrium.jpeg"]
     } else {
       // Default placeholder images
@@ -93,45 +58,42 @@ export default async function ProviderPage({ params }: { params: { id: string } 
     }
   }
 
-  // Get provider coordinates
-  const getProviderCoordinates = (providerId: string): [number, number] => {
-    // Default coordinates for Eswatini (center of the country)
-    const defaultCoordinates: [number, number] = [-26.5225, 31.4659]
+  const providerImages = getProviderImages(provider.id)
 
-    // Provider-specific coordinates
-    const coordinatesMap: Record<string, [number, number]> = {
-      "hlane-royal-national-park": [-26.2667, 31.8333],
-      "royal-swazi-spa": [-26.4333, 31.1833],
-      "mantenga-cultural-village": [-26.4167, 31.1667],
-      "mlilwane-wildlife-sanctuary": [-26.4833, 31.1833],
-      "swazi-candles": [-26.5333, 31.2],
-      mbabane: [-26.3167, 31.1333],
-      manzini: [-26.4833, 31.3667],
-      lobamba: [-26.4667, 31.2],
+  // Extract coordinates for the provider location
+  // Note: In a real app, these would come from your database
+  const getProviderCoordinates = () => {
+    // Check if we have specific coordinates for this provider
+    const specificProviders: Record<string, { lat: number; lng: number }> = {
+      "hlane-royal-national-park": { lat: -26.3, lng: 31.8333 },
+      "royal-swazi-spa": { lat: -26.4167, lng: 31.2 },
+      "mantenga-cultural-village": { lat: -26.45, lng: 31.2 },
+      "mlilwane-wildlife-sanctuary": { lat: -26.4833, lng: 31.1833 },
+      "swazi-candles": { lat: -26.55, lng: 31.1833 },
+      "shewula-mountain-camp": { lat: -26.1167, lng: 31.9 },
     }
 
-    // Try to find coordinates by ID
-    if (coordinatesMap[providerId]) {
-      return coordinatesMap[providerId]
+    if (specificProviders[provider.id]) {
+      return specificProviders[provider.id]
     }
 
-    // If not found, try to match by name pattern
-    const normalizedId = providerId.toLowerCase()
-    if (normalizedId.includes("hlane")) return coordinatesMap["hlane-royal-national-park"]
-    if (normalizedId.includes("royal") || normalizedId.includes("spa")) return coordinatesMap["royal-swazi-spa"]
-    if (normalizedId.includes("mantenga")) return coordinatesMap["mantenga-cultural-village"]
-    if (normalizedId.includes("mlilwane")) return coordinatesMap["mlilwane-wildlife-sanctuary"]
-    if (normalizedId.includes("candle")) return coordinatesMap["swazi-candles"]
+    // If no specific coordinates, use region center
+    const regionCenters: Record<string, { lat: number; lng: number }> = {
+      hhohho: { lat: -26.3208, lng: 31.1367 },
+      manzini: { lat: -26.4833, lng: 31.3667 },
+      lubombo: { lat: -26.35, lng: 31.85 },
+      shiselweni: { lat: -26.85, lng: 31.2 },
+    }
 
-    // Return default coordinates if no match found
-    return defaultCoordinates
+    return regionCenters[provider.region] || { lat: -26.5225, lng: 31.4659 }
   }
 
-  const providerImages = getProviderImages(provider.slug || provider.id)
-  const providerCoordinates = getProviderCoordinates(provider.slug || provider.id)
+  const coordinates = getProviderCoordinates()
 
   return (
-    <main className="min-h-screen pb-16">
+    <main className="min-h-screen pb-20">
+      <Navbar />
+
       {/* Back Button */}
       <div className="container mx-auto px-4 py-4">
         <BackButton />
@@ -144,17 +106,17 @@ export default async function ProviderPage({ params }: { params: { id: string } 
       <ProviderNavigation providerId={provider.id} />
 
       {/* Provider Details */}
-      <section className="container mx-auto py-6 md:py-8 px-3 md:px-4">
-        <div className="flex flex-col lg:flex-row gap-6 md:gap-8">
+      <section className="container mx-auto py-8 px-4">
+        <div className="flex flex-col lg:flex-row gap-8">
           {/* Main Content */}
           <div className="flex-1">
             <div className="flex justify-between items-start mb-4">
               <div>
-                <h1 className="text-2xl md:text-3xl font-bold">{provider.name}</h1>
+                <h1 className="text-3xl font-bold">{provider.name}</h1>
                 <div className="flex items-center mt-2">
                   <MapPin className="h-4 w-4 text-muted-foreground mr-1" />
                   <span className="text-muted-foreground">
-                    {provider.location}, {provider.region}
+                    {provider.location}, {providerRegion?.name} Region
                   </span>
                 </div>
               </div>
@@ -180,9 +142,7 @@ export default async function ProviderPage({ params }: { params: { id: string } 
                   ))}
               </div>
               <span className="ml-2 font-medium">{provider.rating.toFixed(1)}</span>
-              <span className="ml-1 text-muted-foreground">
-                ({provider.review_count || provider.reviewCount || 0} reviews)
-              </span>
+              <span className="ml-1 text-muted-foreground">({provider.reviewCount} reviews)</span>
             </div>
 
             {/* About Section */}
@@ -224,6 +184,40 @@ export default async function ProviderPage({ params }: { params: { id: string } 
                       </span>
                     </li>
                   </ul>
+                </div>
+              </div>
+            </div>
+
+            {/* Location Map Section */}
+            <div id="location-map" className="mb-12 scroll-mt-32">
+              <h2 className="text-2xl font-bold mb-4 flex items-center">
+                <span className="bg-primary/10 p-2 rounded-full mr-3">
+                  <MapPin className="h-5 w-5 text-primary" />
+                </span>
+                Location
+              </h2>
+              <div className="pl-12">
+                <GoogleMapsEswatini
+                  height="400px"
+                  zoom={14}
+                  showControls={true}
+                  destination={{
+                    name: provider.name,
+                    lat: coordinates.lat,
+                    lng: coordinates.lng,
+                  }}
+                />
+                <div className="mt-4 p-4 bg-muted/30 rounded-lg">
+                  <h3 className="font-medium mb-2">Location Details</h3>
+                  <p className="text-sm text-muted-foreground">
+                    {provider.name} is located in {provider.location}, {providerRegion?.name} Region.
+                    {provider.category === "accommodation" && " Easily accessible with on-site parking available."}
+                    {provider.category === "adventure" &&
+                      " Perfect location for outdoor activities and nature exploration."}
+                    {provider.category === "cultural" &&
+                      " Situated in an area rich with cultural heritage and traditional sites."}
+                    {provider.category === "dining" && " Conveniently located with easy access to local attractions."}
+                  </p>
                 </div>
               </div>
             </div>
@@ -321,51 +315,28 @@ export default async function ProviderPage({ params }: { params: { id: string } 
               </div>
             </div>
 
-            {/* Additional Tabs for Location and Reviews */}
-            <Tabs defaultValue="location" className="mt-8">
+            {/* Additional Tabs for Reviews */}
+            <Tabs defaultValue="reviews" className="mt-8">
               <TabsList className="w-full">
-                <TabsTrigger value="location">Location & Map</TabsTrigger>
                 <TabsTrigger value="reviews">Reviews</TabsTrigger>
               </TabsList>
 
-              <TabsContent value="location" className="py-4">
-                <LocationMap
-                  name={provider.name}
-                  coordinates={providerCoordinates}
-                  height="h-[300px]"
-                  className="mb-6"
-                />
-
-                <h3 className="text-lg font-bold mb-3">Address</h3>
-                <p className="text-muted-foreground mb-6">{provider.address}</p>
-
-                <h3 className="text-lg font-bold mb-3">Nearby Attractions</h3>
-                <ul className="list-disc pl-5">
-                  <li className="mb-2">Attraction 1 - 2.5 km</li>
-                  <li className="mb-2">Attraction 2 - 4.1 km</li>
-                  <li className="mb-2">Attraction 3 - 5.7 km</li>
-                </ul>
-              </TabsContent>
-
               <TabsContent value="reviews" className="py-4">
-                <ReviewSectionWithSupabase
-                  providerId={typeof provider.id === "number" ? provider.id : Number.parseInt(provider.id, 10) || 0}
-                  initialReviews={reviews}
-                />
+                <ReviewSection providerId={provider.id} />
               </TabsContent>
             </Tabs>
           </div>
 
-          {/* Sidebar - Move to bottom on mobile */}
-          <div className="w-full lg:w-80 order-first lg:order-last">
-            <div className="lg:sticky lg:top-32">
+          {/* Sidebar */}
+          <div className="w-full lg:w-80">
+            <div className="sticky top-32">
               <Card>
-                <CardContent className="p-4 md:p-6">
+                <CardContent className="p-6">
                   <h3 className="text-xl font-bold mb-4">Quick Info</h3>
 
                   <div className="mb-4">
                     <p className="text-sm text-muted-foreground mb-1">Price Range</p>
-                    <p className="text-xl md:text-2xl font-bold">
+                    <p className="text-2xl font-bold">
                       {provider.price > 0 ? `From E${provider.price}/night` : "Free"}
                     </p>
                   </div>
@@ -375,16 +346,16 @@ export default async function ProviderPage({ params }: { params: { id: string } 
                     <div className="space-y-2">
                       <div className="flex items-center">
                         <Phone className="h-4 w-4 mr-2 text-muted-foreground" />
-                        <span className="text-sm">{provider.phone}</span>
+                        <span>{provider.phone}</span>
                       </div>
                       <div className="flex items-center">
                         <Mail className="h-4 w-4 mr-2 text-muted-foreground" />
-                        <span className="text-sm">{provider.email}</span>
+                        <span>{provider.email}</span>
                       </div>
                       <div className="flex items-center">
                         <Globe className="h-4 w-4 mr-2 text-muted-foreground" />
-                        <a href={provider.website || "#"} className="text-primary hover:underline text-sm">
-                          {provider.website?.replace("https://", "") || "Website coming soon"}
+                        <a href={provider.website} className="text-primary hover:underline">
+                          {provider.website?.replace("https://", "")}
                         </a>
                       </div>
                     </div>
@@ -400,38 +371,41 @@ export default async function ProviderPage({ params }: { params: { id: string } 
       <section className="container mx-auto py-8 px-4 border-t">
         <h2 className="text-2xl font-bold mb-6">You May Also Like</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {filteredRelatedProviders.map((relatedProvider) => (
-            <div key={relatedProvider.id} className="bg-white rounded-lg overflow-hidden shadow-md">
-              <div className="h-48 overflow-hidden">
-                <img
-                  src={`/placeholder.svg?height=300&width=500&text=${relatedProvider.name}`}
-                  alt={relatedProvider.name}
-                  className="w-full h-full object-cover"
-                />
-              </div>
-              <div className="p-4">
-                <div className="flex justify-between items-center mb-2">
-                  <h3 className="font-bold">{relatedProvider.name}</h3>
-                  <div className="flex items-center">
-                    <Star className="h-4 w-4 text-yellow-500 fill-yellow-500" />
-                    <span className="text-sm ml-1">{relatedProvider.rating.toFixed(1)}</span>
+          {allProviders
+            .filter((p) => p.id !== provider.id && p.category === provider.category)
+            .slice(0, 3)
+            .map((relatedProvider) => (
+              <div key={relatedProvider.id} className="bg-white rounded-lg overflow-hidden shadow-md">
+                <div className="h-48 overflow-hidden">
+                  <img
+                    src={`/placeholder.svg?height=300&width=500&text=${relatedProvider.name}`}
+                    alt={relatedProvider.name}
+                    className="w-full h-full object-cover"
+                  />
+                </div>
+                <div className="p-4">
+                  <div className="flex justify-between items-center mb-2">
+                    <h3 className="font-bold">{relatedProvider.name}</h3>
+                    <div className="flex items-center">
+                      <Star className="h-4 w-4 text-yellow-500 fill-yellow-500" />
+                      <span className="text-sm ml-1">{relatedProvider.rating.toFixed(1)}</span>
+                    </div>
+                  </div>
+                  <p className="text-muted-foreground text-sm mb-3 line-clamp-2">{relatedProvider.description}</p>
+                  <div className="flex justify-between items-center">
+                    <span className="text-primary font-medium">
+                      {relatedProvider.price > 0 ? `E${relatedProvider.price}` : "Free"}
+                    </span>
+                    <a
+                      href={`/providers/${relatedProvider.id}`}
+                      className="px-3 py-1 bg-primary text-white text-sm rounded-md hover:bg-primary/90"
+                    >
+                      View Details
+                    </a>
                   </div>
                 </div>
-                <p className="text-muted-foreground text-sm mb-3 line-clamp-2">{relatedProvider.description}</p>
-                <div className="flex justify-between items-center">
-                  <span className="text-primary font-medium">
-                    {relatedProvider.price > 0 ? `E${relatedProvider.price}` : "Free"}
-                  </span>
-                  <a
-                    href={`/providers/${relatedProvider.slug || relatedProvider.id}`}
-                    className="px-3 py-1 bg-primary text-white text-sm rounded-md hover:bg-primary/90"
-                  >
-                    View Details
-                  </a>
-                </div>
               </div>
-            </div>
-          ))}
+            ))}
         </div>
       </section>
 

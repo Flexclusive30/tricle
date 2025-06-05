@@ -6,11 +6,14 @@ import { Card, CardContent } from "@/components/ui/card"
 import { MapPin, CalendarIcon } from "lucide-react"
 import Navbar from "@/components/navbar"
 import Footer from "@/components/footer"
-import { events } from "@/lib/data"
-// Add back button to the events page as well
+import { getAllEvents } from "@/lib/data"
 import BackButton from "@/components/back-button"
+import GoogleMapsEswatini from "@/components/google-maps-eswatini"
+import Link from "next/link"
 
 export default function EventsPage() {
+  const allEvents = getAllEvents()
+
   const months = [
     "January",
     "February",
@@ -38,9 +41,10 @@ export default function EventsPage() {
     { id: "all", name: "All Categories" },
     { id: "cultural", name: "Cultural" },
     { id: "music", name: "Music & Arts" },
-    { id: "food", name: "Food & Drink" },
+    { id: "national", name: "National" },
     { id: "sports", name: "Sports" },
-    { id: "nature", name: "Nature" },
+    { id: "business", name: "Business" },
+    { id: "religious", name: "Religious" },
   ]
 
   return (
@@ -109,11 +113,21 @@ export default function EventsPage() {
         </div>
       </section>
 
+      {/* Event Locations Map */}
+      <section className="container mx-auto py-8 px-4">
+        <h2 className="text-2xl font-bold mb-4">Event Locations</h2>
+        <p className="text-muted-foreground mb-6">
+          Explore where events and festivals take place across Eswatini. Many cultural events happen in traditional
+          venues and royal residences.
+        </p>
+        <GoogleMapsEswatini height="400px" zoom={9} />
+      </section>
+
       {/* Events Calendar */}
       <section className="container mx-auto py-8 px-4">
         <Tabs defaultValue="list">
           <div className="flex justify-between items-center mb-6">
-            <h2 className="text-2xl font-bold">Upcoming Events</h2>
+            <h2 className="text-2xl font-bold">All Events & Festivals</h2>
             <TabsList>
               <TabsTrigger value="list">List View</TabsTrigger>
               <TabsTrigger value="calendar">Calendar View</TabsTrigger>
@@ -122,11 +136,11 @@ export default function EventsPage() {
 
           <TabsContent value="list">
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {events.map((event) => (
+              {allEvents.map((event) => (
                 <Card key={event.id} className="overflow-hidden">
                   <div className="h-48 overflow-hidden">
                     <img
-                      src={`/placeholder.svg?height=300&width=500&text=${event.name}`}
+                      src={event.image || "/placeholder.svg"}
                       alt={event.name}
                       className="w-full h-full object-cover"
                     />
@@ -137,6 +151,11 @@ export default function EventsPage() {
                         {new Date(event.date).toLocaleDateString("en-US", { month: "short", day: "numeric" })}
                       </div>
                       <div className="ml-2 text-sm text-muted-foreground">{event.time}</div>
+                      {event.featured && (
+                        <div className="ml-auto bg-yellow-100 text-yellow-800 px-2 py-1 rounded text-xs font-medium">
+                          Featured
+                        </div>
+                      )}
                     </div>
 
                     <h3 className="font-bold text-lg mb-2">{event.name}</h3>
@@ -148,9 +167,12 @@ export default function EventsPage() {
 
                     <p className="text-muted-foreground text-sm mb-4 line-clamp-2">{event.description}</p>
 
-                    <Button asChild>
-                      <a href={`/events/${event.id}`}>View Details</a>
-                    </Button>
+                    <div className="flex justify-between items-center">
+                      <span className="text-primary font-medium">{event.price === 0 ? "Free" : `E${event.price}`}</span>
+                      <Button asChild size="sm">
+                        <Link href={`/events/${event.id}`}>View Details</Link>
+                      </Button>
+                    </div>
                   </CardContent>
                 </Card>
               ))}
@@ -170,11 +192,11 @@ export default function EventsPage() {
                   <h3 className="font-bold text-lg mb-4">Events on Selected Date</h3>
 
                   <div className="space-y-4">
-                    {events.slice(0, 2).map((event) => (
+                    {allEvents.slice(0, 3).map((event) => (
                       <div key={event.id} className="flex border rounded-md overflow-hidden">
                         <div className="w-1/4">
                           <img
-                            src={`/placeholder.svg?height=100&width=100&text=${event.name}`}
+                            src={event.image || "/placeholder.svg"}
                             alt={event.name}
                             className="w-full h-full object-cover"
                           />
@@ -189,7 +211,14 @@ export default function EventsPage() {
                             <span>{event.location}</span>
                           </div>
                           <p className="text-sm text-muted-foreground mb-3 line-clamp-2">{event.description}</p>
-                          <Button size="sm">View Details</Button>
+                          <div className="flex justify-between items-center">
+                            <span className="text-primary font-medium">
+                              {event.price === 0 ? "Free" : `E${event.price}`}
+                            </span>
+                            <Button size="sm" asChild>
+                              <Link href={`/events/${event.id}`}>View Details</Link>
+                            </Button>
+                          </div>
                         </div>
                       </div>
                     ))}

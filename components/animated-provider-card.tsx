@@ -37,16 +37,14 @@ export default function AnimatedProviderCard({ provider, className }: AnimatedPr
   const [textColor, borderColor] = categoryColor.split(" ")
 
   return (
-    <Link href={`/providers/${provider.id || provider.slug}`}>
+    <Link href={`/providers/${provider.id}`}>
       <div
         className={cn(
-          "w-full sm:w-[300px] h-[180px] sm:h-[200px] bg-slate-800/35 backdrop-blur-sm relative flex items-center justify-center rounded-lg overflow-hidden transition-all duration-500 group mx-auto",
+          "w-[300px] h-[200px] bg-slate-800 relative flex items-center justify-center rounded-lg overflow-hidden transition-all duration-500 group",
           className,
         )}
         onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={() => setIsHovered(false)}
-        onTouchStart={() => setIsHovered(true)}
-        onTouchEnd={() => setTimeout(() => setIsHovered(false), 1000)}
       >
         {/* Animated border */}
         <div
@@ -94,7 +92,7 @@ export default function AnimatedProviderCard({ provider, className }: AnimatedPr
         {/* Bottom text */}
         <span
           className={cn(
-            "absolute left-1/2 bottom-[13px] -translate-x-1/2 text-[6px] uppercase px-[5px] pl-[8px] bg-slate-800/70 opacity-0 tracking-[7px] transition-all duration-500",
+            "absolute left-1/2 bottom-[13px] -translate-x-1/2 text-[6px] uppercase px-[5px] pl-[8px] bg-slate-800 opacity-0 tracking-[7px] transition-all duration-500",
             textColor,
             isHovered && "opacity-100 tracking-[3px]",
           )}

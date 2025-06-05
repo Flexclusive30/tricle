@@ -51,10 +51,6 @@ const config: Config = {
           DEFAULT: "hsl(var(--card))",
           foreground: "hsl(var(--card-foreground))",
         },
-        // Eswatini flag colors
-        "eswatini-blue": "#3e5eb9",
-        "eswatini-yellow": "#ffd700",
-        "eswatini-red": "#b10c0c",
       },
       borderRadius: {
         lg: "var(--radius)",

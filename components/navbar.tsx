@@ -1,61 +1,102 @@
 "use client"
 
+import { useState } from "react"
 import Link from "next/link"
-import { usePathname } from "next/navigation"
-import { useTheme } from "next-themes"
-import { Sun, Moon, User } from "lucide-react"
 import { Button } from "@/components/ui/button"
+import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
+import { Menu, User, Sun, Moon } from "lucide-react"
+import { useTheme } from "next-themes"
 
 export default function Navbar() {
-  const pathname = usePathname()
+  const [isMenuOpen, setIsMenuOpen] = useState(false)
   const { theme, setTheme } = useTheme()
 
   const toggleTheme = () => {
     setTheme(theme === "dark" ? "light" : "dark")
   }
 
+  const navLinks = [
+    { name: "Home", href: "/" },
+    { name: "Regions", href: "/regions/hhohho" },
+    { name: "Categories", href: "/categories/accommodation" },
+    { name: "Events", href: "/events" },
+    { name: "Travel Guides", href: "/guides" },
+  ]
+
   return (
-    <nav className="bg-white/90 dark:bg-gray-900/90 backdrop-blur-md sticky top-0 z-40 w-full border-b border-gray-200 dark:border-gray-800">
-      <div className="container mx-auto py-4 px-4 flex items-center justify-between">
-        <Link href="/" className="font-bold text-xl">
-          <span className="text-eswatini-blue">Visit</span> <span className="text-eswatini-red">Eswatini</span>
-        </Link>
-
-        <div className="flex items-center space-x-4">
-          <Link
-            href="/"
-            className={`hidden md:block text-gray-600 dark:text-gray-400 hover:text-eswatini-blue ${pathname === "/" ? "font-semibold" : ""}`}
-          >
-            Home
-          </Link>
-          <Link
-            href="/categories/all"
-            className={`hidden md:block text-gray-600 dark:text-gray-400 hover:text-eswatini-blue ${pathname.startsWith("/categories") ? "font-semibold" : ""}`}
-          >
-            Explore
-          </Link>
-          <Link
-            href="/destinations-map"
-            className={`hidden md:block text-gray-600 dark:text-gray-400 hover:text-eswatini-blue ${pathname === "/map" ? "font-semibold" : ""}`}
-          >
-            Map
-          </Link>
-          <Link
-            href="/events"
-            className={`hidden md:block text-gray-600 dark:text-gray-400 hover:text-eswatini-blue ${pathname === "/events" ? "font-semibold" : ""}`}
-          >
-            Events
+    <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+      <div className="container flex h-16 items-center justify-between">
+        <div className="flex items-center">
+          <Link href="/" className="font-bold text-2xl mr-6">
+            <span className="text-primary">Visit</span> Eswatini
           </Link>
 
-          <Button variant="ghost" size="icon" onClick={toggleTheme}>
+          <nav className="hidden md:flex items-center gap-6">
+            {navLinks.map((link) => (
+              <Link
+                key={link.name}
+                href={link.href}
+                className="text-sm font-medium transition-colors hover:text-primary"
+              >
+                {link.name}
+              </Link>
+            ))}
+          </nav>
+        </div>
+
+        <div className="flex items-center gap-2">
+          <Button variant="ghost" size="icon" onClick={toggleTheme} className="hidden md:flex">
             {theme === "dark" ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
           </Button>
-          <Button variant="outline" size="sm">
+
+          <Button variant="outline" size="sm" className="hidden md:flex">
             <User className="h-4 w-4 mr-2" />
             Sign In
           </Button>
+
+          <Sheet>
+            <SheetTrigger asChild>
+              <Button variant="ghost" size="icon" className="md:hidden">
+                <Menu className="h-5 w-5" />
+              </Button>
+            </SheetTrigger>
+            <SheetContent
+              side="right"
+              className="bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60"
+            >
+              <div className="flex flex-col h-full">
+                <div className="flex justify-between items-center mb-6">
+                  <Link href="/" className="font-bold text-xl">
+                    <span className="text-primary">Visit</span> Eswatini
+                  </Link>
+                  <Button variant="ghost" size="icon" onClick={toggleTheme}>
+                    {theme === "dark" ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
+                  </Button>
+                </div>
+
+                <nav className="flex flex-col gap-4">
+                  {navLinks.map((link) => (
+                    <Link
+                      key={link.name}
+                      href={link.href}
+                      className="text-lg font-medium py-2 transition-colors hover:text-primary"
+                    >
+                      {link.name}
+                    </Link>
+                  ))}
+                </nav>
+
+                <div className="mt-auto">
+                  <Button className="w-full">
+                    <User className="h-4 w-4 mr-2" />
+                    Sign In
+                  </Button>
+                </div>
+              </div>
+            </SheetContent>
+          </Sheet>
         </div>
       </div>
-    </nav>
+    </header>
   )
 }

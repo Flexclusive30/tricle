@@ -5,60 +5,57 @@ import { Facebook, Twitter, Instagram, Youtube, Mail } from "lucide-react"
 
 export default function Footer() {
   return (
-    <footer className="bg-white/25 backdrop-blur-sm border-t border-white/20">
-      <div className="container mx-auto py-8 md:py-12 px-4">
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 md:gap-8">
+    <footer className="bg-muted/50 border-t">
+      <div className="container mx-auto py-12 px-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
           <div>
-            <h3 className="font-bold text-lg mb-3 md:mb-4 text-shadow">
-              <span className="text-eswatini-blue">Visit</span> <span className="text-eswatini-red">Eswatini</span>
+            <h3 className="font-bold text-lg mb-4">
+              <span className="text-primary">Visit</span> Eswatini
             </h3>
-            <p className="text-foreground mb-4 text-shadow-light text-sm">
+            <p className="text-muted-foreground mb-4">
               Discover the beauty and culture of Eswatini, the Kingdom formerly known as Swaziland.
             </p>
-            <div className="flex space-x-3">
-              <Button variant="ghost" size="icon" className="bg-white/20 hover:bg-white/40 h-9 w-9">
-                <Facebook className="h-4 w-4" />
+            <div className="flex space-x-4">
+              <Button variant="ghost" size="icon">
+                <Facebook className="h-5 w-5" />
               </Button>
-              <Button variant="ghost" size="icon" className="bg-white/20 hover:bg-white/40 h-9 w-9">
-                <Twitter className="h-4 w-4" />
+              <Button variant="ghost" size="icon">
+                <Twitter className="h-5 w-5" />
               </Button>
-              <Button variant="ghost" size="icon" className="bg-white/20 hover:bg-white/40 h-9 w-9">
-                <Instagram className="h-4 w-4" />
+              <Button variant="ghost" size="icon">
+                <Instagram className="h-5 w-5" />
               </Button>
-              <Button variant="ghost" size="icon" className="bg-white/20 hover:bg-white/40 h-9 w-9">
-                <Youtube className="h-4 w-4" />
+              <Button variant="ghost" size="icon">
+                <Youtube className="h-5 w-5" />
               </Button>
             </div>
           </div>
 
           <div>
-            <h3 className="font-bold text-lg mb-3 md:mb-4 text-shadow">Quick Links</h3>
-            <ul className="space-y-2 text-sm">
+            <h3 className="font-bold text-lg mb-4">Quick Links</h3>
+            <ul className="space-y-2">
               <li>
-                <Link href="/" className="text-foreground hover:text-eswatini-blue text-shadow-light">
+                <Link href="/" className="text-muted-foreground hover:text-primary">
                   Home
                 </Link>
               </li>
               <li>
-                <Link href="/regions/hhohho" className="text-foreground hover:text-eswatini-blue text-shadow-light">
+                <Link href="/regions/hhohho" className="text-muted-foreground hover:text-primary">
                   Regions
                 </Link>
               </li>
               <li>
-                <Link
-                  href="/categories/accommodation"
-                  className="text-foreground hover:text-eswatini-blue text-shadow-light"
-                >
+                <Link href="/categories/accommodation" className="text-muted-foreground hover:text-primary">
                   Accommodations
                 </Link>
               </li>
               <li>
-                <Link href="/events" className="text-foreground hover:text-eswatini-blue text-shadow-light">
+                <Link href="/events" className="text-muted-foreground hover:text-primary">
                   Events & Festivals
                 </Link>
               </li>
               <li>
-                <Link href="/guides" className="text-foreground hover:text-eswatini-blue text-shadow-light">
+                <Link href="/guides" className="text-muted-foreground hover:text-primary">
                   Travel Guides
                 </Link>
               </li>
@@ -66,30 +63,30 @@ export default function Footer() {
           </div>
 
           <div>
-            <h3 className="font-bold text-lg mb-3 md:mb-4 text-shadow">Resources</h3>
-            <ul className="space-y-2 text-sm">
+            <h3 className="font-bold text-lg mb-4">Resources</h3>
+            <ul className="space-y-2">
               <li>
-                <Link href="/about" className="text-foreground hover:text-eswatini-blue text-shadow-light">
+                <Link href="/about" className="text-muted-foreground hover:text-primary">
                   About Eswatini
                 </Link>
               </li>
               <li>
-                <Link href="/visa" className="text-foreground hover:text-eswatini-blue text-shadow-light">
+                <Link href="/visa" className="text-muted-foreground hover:text-primary">
                   Visa Information
                 </Link>
               </li>
               <li>
-                <Link href="/safety" className="text-foreground hover:text-eswatini-blue text-shadow-light">
+                <Link href="/safety" className="text-muted-foreground hover:text-primary">
                   Safety Tips
                 </Link>
               </li>
               <li>
-                <Link href="/faq" className="text-foreground hover:text-eswatini-blue text-shadow-light">
+                <Link href="/faq" className="text-muted-foreground hover:text-primary">
                   FAQs
                 </Link>
               </li>
               <li>
-                <Link href="/contact" className="text-foreground hover:text-eswatini-blue text-shadow-light">
+                <Link href="/contact" className="text-muted-foreground hover:text-primary">
                   Contact Us
                 </Link>
               </li>
@@ -97,13 +94,13 @@ export default function Footer() {
           </div>
 
           <div>
-            <h3 className="font-bold text-lg mb-3 md:mb-4 text-shadow">Newsletter</h3>
-            <p className="text-foreground mb-3 md:mb-4 text-shadow-light text-sm">
+            <h3 className="font-bold text-lg mb-4">Newsletter</h3>
+            <p className="text-muted-foreground mb-4">
               Subscribe to our newsletter for the latest updates on events and travel deals.
             </p>
-            <div className="flex flex-col sm:flex-row gap-2">
-              <Input type="email" placeholder="Your email" className="bg-white/50" />
-              <Button className="bg-eswatini-blue hover:bg-eswatini-blue/90 whitespace-nowrap">
+            <div className="flex gap-2">
+              <Input type="email" placeholder="Your email" />
+              <Button>
                 <Mail className="h-4 w-4 mr-2" />
                 Subscribe
               </Button>
@@ -111,7 +108,7 @@ export default function Footer() {
           </div>
         </div>
 
-        <div className="border-t border-white/20 mt-6 md:mt-8 pt-6 md:pt-8 text-center text-foreground text-shadow-light text-sm">
+        <div className="border-t mt-8 pt-8 text-center text-muted-foreground">
           <p>&copy; {new Date().getFullYear()} Visit Eswatini. All rights reserved.</p>
         </div>
       </div>

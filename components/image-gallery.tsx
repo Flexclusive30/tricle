@@ -30,10 +30,10 @@ export default function ImageGallery({ provider, images }: ImageGalleryProps) {
 
   return (
     <>
-      <section className="container mx-auto py-3 md:py-4 px-3 md:px-4">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-2 md:gap-4">
+      <section className="container mx-auto py-4 px-4">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <div
-            className="md:col-span-2 h-64 md:h-96 overflow-hidden rounded-lg cursor-pointer"
+            className="md:col-span-2 h-80 md:h-96 overflow-hidden rounded-lg cursor-pointer"
             onClick={() => setShowFullscreen(true)}
           >
             <img
@@ -59,7 +59,7 @@ export default function ImageGallery({ provider, images }: ImageGalleryProps) {
           </div>
         </div>
 
-        <div className="flex justify-center mt-3 md:mt-4 md:hidden">
+        <div className="flex justify-center mt-4 md:hidden">
           {galleryImages.map((_, index) => (
             <button
               key={index}
@@ -82,18 +82,18 @@ export default function ImageGallery({ provider, images }: ImageGalleryProps) {
             <X className="h-6 w-6" />
           </Button>
 
-          <Button variant="ghost" size="icon" className="absolute left-2 md:left-4 text-white" onClick={prevImage}>
-            <ChevronLeft className="h-6 w-6 md:h-8 md:w-8" />
+          <Button variant="ghost" size="icon" className="absolute left-4 text-white" onClick={prevImage}>
+            <ChevronLeft className="h-8 w-8" />
           </Button>
 
           <img
             src={galleryImages[currentImage] || "/placeholder.svg"}
             alt={`${provider.name} - Fullscreen Image`}
-            className="max-h-screen max-w-full object-contain px-10"
+            className="max-h-screen max-w-full object-contain"
           />
 
-          <Button variant="ghost" size="icon" className="absolute right-2 md:right-4 text-white" onClick={nextImage}>
-            <ChevronRight className="h-6 w-6 md:h-8 md:w-8" />
+          <Button variant="ghost" size="icon" className="absolute right-4 text-white" onClick={nextImage}>
+            <ChevronRight className="h-8 w-8" />
           </Button>
 
           <div className="absolute bottom-4 left-0 right-0 flex justify-center gap-2">
@@ -101,7 +101,7 @@ export default function ImageGallery({ provider, images }: ImageGalleryProps) {
               <button
                 key={index}
                 className={`h-2 rounded-full transition-all ${
-                  index === currentImage ? "w-6 md:w-8 bg-white" : "w-2 bg-white/50"
+                  index === currentImage ? "w-8 bg-white" : "w-2 bg-white/50"
                 }`}
                 onClick={() => setCurrentImage(index)}
               />
